@@ -1,5 +1,13 @@
 # Background remover
 
+App to remove the background of an image. Select the original image, click on the image on the subject to be kept and then press "Remove Background" button.
+
+<p float="left">
+  <img src="img/orginal.png" width="40%" />
+  <img src="img/background-removed.png" width="40%" /> 
+</p>
+
+
 Source: [Machine learning web app with Python, Streamlit & Segment Anything Model](https://www.youtube.com/watch?v=W8OvdQPL7lk)
 
 Using:
