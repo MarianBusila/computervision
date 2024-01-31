@@ -1,6 +1,9 @@
 import streamlit as st
-import PIL
 from ultralytics import YOLO
+from pathlib import Path
+
+import settings
+import helper
 
 model_path = 'weights/yolov8n.pt'
 
@@ -12,39 +15,34 @@ st.set_page_config(
     initial_sidebar_state="expanded",
     )
 
-# Set sidebar
-with st.sidebar:
-    st.header("Image/Video Config")
-    # add file uploader
-    source_img = st.sidebar.file_uploader("Upload Image", type=['png', 'jpg', 'jpeg'])
-
-    # model options
-    confidence = float(st.slider("Select Model Confidence", 25, 100, 40)) / 100
-
 st.title("Object Detection and Tracking using YOLOv8")
 
-col1, col2 = st.columns(2)
+# Set sidebar
+st.sidebar.header("ML Model Config")
 
-with col1:
-    if source_img is not None:
-        uploaded_image = PIL.Image.open(source_img)
-        st.image(uploaded_image, caption='Uploaded Image', use_column_width=True)
+# Model options
+model_type = st.sidebar.radio("Select Task", ['Detection', 'Segmentation'])
+confidence = float(st.sidebar.slider("Select Model Confidence", 25, 100, 40)) / 100
 
+# Selecting detection or segmentation
+if model_type == 'Detection':
+    model_path = Path(settings.DETECTION_MODEL)
+elif model_type == 'Segmentation':
+    model_path = Path(settings.SEGMENTATION_MODEL)
+
+# Load model
 try:
     model = YOLO(model_path)
 except Exception as ex:
     st.error(f"Unable to load model. Check the specified path: {model_path}")
     st.error(ex)
 
-if st.sidebar.button('Detect objects'):
-    res = model.predict(uploaded_image, conf=confidence)
-    boxes = res[0].boxes
-    res_plotted = res[0].plot()[:, :, ::-1]
-    with col2:
-        st.image(res_plotted, caption='Detected Image', use_column_width=True)
-        try:
-            with st.expander("Detection results"):
-                for box in boxes:
-                    st.write(box.xywh)
-        except Exception as ex:
-            st.write("No image is uploaded yet.")
+
+st.sidebar.header("Image/Video Config")
+source_radio = st.sidebar.radio("Select Source", settings.SOURCES_LIST)
+
+# If image is selected
+if(source_radio == settings.IMAGE):
+    helper.handle_image(confidence, model)
+elif source_radio == settings.VIDEO:
+    helper.handle_stored_video(confidence, model)

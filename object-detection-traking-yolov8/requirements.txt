@@ -3,5 +3,6 @@ torch==2.1.0
 ultralytics
 streamlit
 pafy
+youtube-dl
 Pillow
 opencv-python
