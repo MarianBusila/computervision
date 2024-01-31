@@ -8,4 +8,5 @@
 
 Small applications using computer vision.
 
-- [Background remover](background-remover/README.md)
+- [Background remover with SAM](background-remover/README.md)
+- [Object detection and tracking with YOLOv8](object-detection-traking-yolov8/README.md)
