@@ -6,3 +6,4 @@ pafy
 youtube-dl
 Pillow
 opencv-python
+pytube

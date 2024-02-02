@@ -46,3 +46,5 @@ if(source_radio == settings.IMAGE):
     helper.handle_image(confidence, model)
 elif source_radio == settings.VIDEO:
     helper.handle_stored_video(confidence, model)
+elif source_radio == settings.YOUTUBE:
+    helper.handle_youtube_video(confidence, model)
