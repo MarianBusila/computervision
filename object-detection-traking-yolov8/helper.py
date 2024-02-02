@@ -6,13 +6,23 @@ import settings
 import PIL
 from pytube import YouTube
 
+def display_tracker_options():
+    display_tracker = st.radio("Display Tracker", ("Yes", "No"))
+    is_display_tracker = True if display_tracker == "Yes" else False
+    if is_display_tracker:
+        tracker_type = st.radio("Tracker", ("bytetrack.yaml", "botsort.yaml"))
+        return is_display_tracker, tracker_type
+    return is_display_tracker, None
 
-def _display_detected_frames(confidence, model, st_frame, image):
+def _display_detected_frames(confidence, model, st_frame, image, is_display_tracker=None, tracker=None):
     # resize image to standard size
     image = cv2.resize(image, (720, int(720 * (9/16))))
 
     # detect objects in the image
-    res = model.predict(image, conf=confidence)
+    if is_display_tracker:
+        res = model.track(image, conf=confidence, persist=True, tracker=tracker)
+    else:
+        res = model.predict(image, conf=confidence)
 
     # plot the detected objects
     res_plotted = res[0].plot()[:, :, ::-1]
@@ -20,6 +30,7 @@ def _display_detected_frames(confidence, model, st_frame, image):
 
 def handle_youtube_video(confidence, model):
     source_youtube = st.sidebar.text_input("YouTube Video URL", "https://www.youtube.com/watch?v=9bZkp7q19f0")
+    is_display_tracker, tracker = display_tracker_options()
 
     col1, col2 = st.columns(2)
     with col1:
@@ -29,10 +40,11 @@ def handle_youtube_video(confidence, model):
         if st.sidebar.button('Detect video objects'):
             yt = YouTube(source_youtube)
             stream = yt.streams.filter(file_extension="mp4", res=720).first()
-            _handle_video_capture(confidence, model, stream.url)
+            _handle_video_capture(confidence, model, stream.url, is_display_tracker, tracker)
 
 def handle_stored_video(confidence, model):
     source_vid = st.sidebar.selectbox("Choose Video", list(settings.VIDEOS_DICT.keys()))
+    is_display_tracker, tracker = display_tracker_options()
 
     col1, col2 = st.columns(2)
     with col1:
@@ -44,16 +56,16 @@ def handle_stored_video(confidence, model):
 
     with col2:
         if st.sidebar.button('Detect video objects'):
-            _handle_video_capture(confidence, model, str(settings.VIDEOS_DICT[source_vid]))
+            _handle_video_capture(confidence, model, str(settings.VIDEOS_DICT[source_vid]), is_display_tracker, tracker)
 
-def _handle_video_capture(confidence, model, path):
+def _handle_video_capture(confidence, model, path, is_display_tracker, tracker):    
     try:
         vid_cap = cv2.VideoCapture(path)
         st_frame = st.empty()
         while(vid_cap.isOpened()):
             success, image = vid_cap.read()
             if success:
-                _display_detected_frames(confidence, model, st_frame, image)
+                _display_detected_frames(confidence, model, st_frame, image, is_display_tracker, tracker)
             else:
                 vid_cap.release()
                 break
