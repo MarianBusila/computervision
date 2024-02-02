@@ -4,6 +4,15 @@ App to detect and track objects in images and videos using YOLOv8.
 
 __Object detection__ is the process of identifying and localizing objects in an image or video frame. __Object tracking__, on the other hand, involves estimating the state of an object, such as its position, velocity, and orientation, over time. __YOLOv8__  uses a single neural network to divide an input image or video into a grid of cells, and each cell is responsible for detecting objects in that region. The network also predicts bounding boxes, confidence scores, and class probabilities for each object detected.
 
+## Object detection
+![](img/image_detection.png)
+
+## Object segmentation
+![](img/image_segmentation.png)
+
+## Object detection and tracking in video
+![](img/video_tracking.png)
+
 Source: [Building a Real-Time Object Detection and Tracking App with YOLOv8 and Streamlit](https://medium.com/@mycodingmantras/building-a-real-time-object-detection-and-tracking-app-with-yolov8-and-streamlit-part-1-30c56f5eb956)
 
 Using:
