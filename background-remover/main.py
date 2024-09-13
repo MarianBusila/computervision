@@ -41,6 +41,8 @@ if file is not None:
     image = Image.open(file).convert('RGB')
     image = image.resize((image_width, int(image.height * image_width / image.width)))
 
+    x, y = None, None
+
     # create buttons
     col1, col2 = col02.columns(2)
 
@@ -61,17 +63,19 @@ if file is not None:
         placeholder0.empty()
         placeholder2 = col02.empty()
 
-        filename = 'br_{}_{}_{}.png'.format(file.name.split('.')[0], x, y)
-        if os.path.exists(filename):
-            # load from saved file, when already processed
-            result_image = cv2.imread(filename, cv2.IMREAD_UNCHANGED)
+        if x is not None and y is not None:
+            filename = 'br_{}_{}_{}.png'.format(file.name.split('.')[0], x, y)
+            if os.path.exists(filename):
+                # load from saved file, when already processed
+                result_image = cv2.imread(filename, cv2.IMREAD_UNCHANGED)
+            else:
+                result_image = remove_background(np.asarray(image), x, y)
+                cv2.imwrite(filename, result_image)
+            
+            with placeholder2:
+                col02.image(result_image, use_column_width=True)
         else:
-            result_image = remove_background(np.asarray(image), x, y)
-            cv2.imwrite(filename, result_image)
-        
-        with placeholder2:
-            col02.image(result_image, use_column_width=True)
-
+            col02.warning("Please click on the subject for which the background will be removed.")
             
 
     # visualize image
